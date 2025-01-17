@@ -24,9 +24,6 @@ const locationElement = document.getElementById('location');
 const timezoneElement = document.getElementById('timezone');
 const ispElement = document.getElementById('isp');
 
-// Variable to store API key
-let API_KEY = '';
-
 // Function to update the UI with the data
 function updateUI(data) {
     const { ip, location, isp } = data;
@@ -55,26 +52,19 @@ function updateUI(data) {
 // Function to fetch IP data
 async function getIPData(searchTerm = '') {
     try {
-        const baseUrl = 'https://geo.ipify.org/api/v2/country,city';
-        const url = searchTerm
-            ? `${baseUrl}?apiKey=${API_KEY}&${isValidIP(searchTerm) ? 'ipAddress' : 'domain'}=${searchTerm}`
-            : `${baseUrl}?apiKey=${API_KEY}`;
-
+        const url = `/.netlify/functions/getIpInfo${searchTerm ? `?search=${searchTerm}` : ''}`;
         const response = await fetch(url);
+        
         if (!response.ok) throw new Error('Failed to fetch IP data');
         
         const data = await response.json();
+        if (data.error) throw new Error(data.error);
+        
         updateUI(data);
     } catch (error) {
         console.error('Error:', error);
         alert('Failed to fetch IP data. Please try again.');
     }
-}
-
-// Function to validate IP address
-function isValidIP(ip) {
-    const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
-    return ipRegex.test(ip);
 }
 
 // Event Listeners
@@ -86,26 +76,7 @@ form.addEventListener('submit', (e) => {
     }
 });
 
-// Initialize app
-async function initApp() {
-    try {
-        console.log('Fetching configuration...');
-        const response = await fetch('/.netlify/functions/getConfig');
-        console.log('Config response status:', response.status);
-        const config = await response.json();
-        console.log('API Key received:', config.apiKey ? 'Yes' : 'No');
-        API_KEY = config.apiKey;
-        
-        if (!API_KEY) {
-            throw new Error('API key not received from server');
-        }
-        
-        getIPData();
-    } catch (error) {
-        console.error('Error loading configuration:', error);
-        alert('Failed to initialize the application. Please try again later.');
-    }
-}
-
 // Initial load
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', () => {
+    getIPData();
+});
