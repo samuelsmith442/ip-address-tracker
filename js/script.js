@@ -90,7 +90,7 @@ form.addEventListener('submit', (e) => {
 async function initApp() {
     try {
         console.log('Fetching configuration...');
-        const response = await fetch('/config');
+        const response = await fetch('/.netlify/functions/getConfig');
         console.log('Config response status:', response.status);
         const config = await response.json();
         console.log('API Key received:', config.apiKey ? 'Yes' : 'No');

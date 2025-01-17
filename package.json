@@ -4,9 +4,13 @@
   "description": "IP Address Tracker application",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "netlify dev"
   },
   "dependencies": {
     "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "netlify-cli": "^12.0.0"
   }
 }
